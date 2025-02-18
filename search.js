@@ -1,34 +1,5 @@
 document.getElementById('search-form').addEventListener('submit', function(event) {
     event.preventDefault();
-    const query = document.getElementById('search-query').value;
-    const apiUrl = `https://duckduckgo.com/api?q=${encodeURIComponent(query)}&format=json`;
-
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-            if (data.RelatedTopics && data.RelatedTopics.length > 0) {
-                const results = data.RelatedTopics;
-                let resultHtml = '<ul>';
-                results.forEach(result => {
-                    if (result.FirstURL) {
-                        resultHtml += `<li><a href="${result.FirstURL}" target="_blank">${result.Text}</a></li>`;
-                    }
-                });
-                resultHtml += '</ul>';
-                document.body.innerHTML = resultHtml; // Display results
-            } else {
-                document.body.innerHTML = "<p>No results found.</p>";
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            document.body.innerHTML = "<p>Error occurred while searching.</p>";
-        });
-});
-
-
-document.getElementById('search-form').addEventListener('submit', function(event) {
-    event.preventDefault();
     const query = document.getElementById('search-query').value.trim();
 
     // Check for bangs
@@ -63,11 +34,14 @@ document.getElementById('search-form').addEventListener('submit', function(event
                 if (data.RelatedTopics && data.RelatedTopics.length > 0) {
                     const results = data.RelatedTopics;
                     let resultHtml = '<ul>';
+
                     results.forEach(result => {
-                        if (result.FirstURL) {
+                        // Only show links that are not pointing to DuckDuckGo's own search results
+                        if (result.FirstURL && !result.FirstURL.includes('duckduckgo.com')) {
                             resultHtml += `<li><a href="${result.FirstURL}" target="_blank">${result.Text}</a></li>`;
                         }
                     });
+
                     resultHtml += '</ul>';
                     document.body.innerHTML = resultHtml; // Display results
                 } else {
